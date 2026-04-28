@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/dopeorca_expense_tracker/static/css/main.75ae20de.css",
+    "main.js": "/dopeorca_expense_tracker/static/js/main.e2bc3f07.js",
+    "index.html": "/dopeorca_expense_tracker/index.html",
+    "main.75ae20de.css.map": "/dopeorca_expense_tracker/static/css/main.75ae20de.css.map",
+    "main.e2bc3f07.js.map": "/dopeorca_expense_tracker/static/js/main.e2bc3f07.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.75ae20de.css",
+    "static/js/main.e2bc3f07.js"
+  ]
+}
