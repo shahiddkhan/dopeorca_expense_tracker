@@ -1,18 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const CATS = [
-  { id: 'food',          label: 'Food',       icon: '🍜' },
-  { id: 'transport',     label: 'Travel',     icon: '🚗' },
-  { id: 'shopping',      label: 'Shopping',   icon: '🛍️' },
-  { id: 'bills',         label: 'Bills',      icon: '⚡' },
-  { id: 'entertainment', label: 'Fun',        icon: '🎬' },
-  { id: 'other',         label: 'Other',      icon: '📦' },
+  { id: 'food',          label: 'Food',     icon: '🍜' },
+  { id: 'transport',     label: 'Travel',   icon: '🚗' },
+  { id: 'shopping',      label: 'Shopping', icon: '🛍️' },
+  { id: 'bills',         label: 'Bills',    icon: '⚡' },
+  { id: 'entertainment', label: 'Fun',      icon: '🎬' },
+  { id: 'other',         label: 'Other',    icon: '📦' },
 ];
 
 export default function AddExpenseSheet({ onClose, onSave, busy }) {
   const [amt, setAmt]   = useState('');
   const [desc, setDesc] = useState('');
   const [cat, setCat]   = useState('food');
+
+  useEffect(() => {
+    function onKey(e) { if (e.key === 'Escape') onClose(); }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
 
   function numPress(k) {
     if (k === 'del') { setAmt(p => p.slice(0, -1)); return; }
@@ -32,11 +38,11 @@ export default function AddExpenseSheet({ onClose, onSave, busy }) {
     <>
       <div className="sheet-backdrop" onClick={onClose} />
       <div className="bottom-sheet">
+        <button className="sheet-close-btn" onClick={onClose} aria-label="Close">✕</button>
         <div className="sheet-handle" />
         <div className="sheet-title">LOG EXPENSE</div>
         <div className="sheet-sub">Track where your money goes</div>
 
-        {/* Amount display */}
         <div className="amount-disp">
           <div className="amount-disp-label">Amount</div>
           <div className={`amount-disp-val${amt ? ' has-val' : ''}`}>
@@ -44,7 +50,6 @@ export default function AddExpenseSheet({ onClose, onSave, busy }) {
           </div>
         </div>
 
-        {/* Description */}
         <input
           className="sheet-input"
           placeholder="What was this for?"
@@ -52,7 +57,6 @@ export default function AddExpenseSheet({ onClose, onSave, busy }) {
           onChange={e => setDesc(e.target.value)}
         />
 
-        {/* Categories */}
         <div className="cat-chips-wrap">
           {CATS.map(c => (
             <button
@@ -65,16 +69,14 @@ export default function AddExpenseSheet({ onClose, onSave, busy }) {
           ))}
         </div>
 
-        {/* Numpad */}
         <div className="numpad-grid">
           {['1','2','3','4','5','6','7','8','9','.','0','del'].map(k => (
-            <button key={k} className={`num-btn${k==='del'?' del':''}`} onClick={() => numPress(k)}>
+            <button key={k} className={`num-btn${k === 'del' ? ' del' : ''}`} onClick={() => numPress(k)}>
               {k === 'del' ? '⌫' : k}
             </button>
           ))}
         </div>
 
-        {/* Confirm */}
         <button className="confirm-btn" onClick={handleSave} disabled={!amt || !desc.trim() || busy}>
           {busy ? 'SAVING...' : 'CONFIRM'}
         </button>

@@ -37,6 +37,18 @@ export default function App() {
     });
   }, []);
 
+  // Escape key closes any open sheet
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === 'Escape') {
+        setShowAdd(false);
+        setShowInc(false);
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   const toast = useCallback((msg, type = 'ok') => {
     setNotif({ msg, type });
     clearTimeout(toastRef.current);
@@ -44,12 +56,30 @@ export default function App() {
   }, []);
 
   async function handleAddExpense(data) {
-    setBusy(true);
-    const exp = await addExpense(data);
-    setExpenses(p => [exp, ...p]);
+    const now = new Date();
+    const optimistic = {
+      id:       `opt-${Date.now()}`,
+      amount:   data.amount,
+      label:    data.label,
+      category: data.category,
+      date:     now.toISOString().split('T')[0],
+      time:     now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    // Optimistic: show instantly, close sheet immediately
+    setExpenses(p => [optimistic, ...p]);
     setShowAdd(false);
     toast('Expense logged ✓');
-    setBusy(false);
+
+    try {
+      const saved = await addExpense(data);
+      // Replace optimistic entry with real DB row
+      setExpenses(p => p.map(e => e.id === optimistic.id ? saved : e));
+    } catch {
+      // Rollback on failure
+      setExpenses(p => p.filter(e => e.id !== optimistic.id));
+      toast('Failed to save — try again', 'err');
+    }
   }
 
   async function handleDeleteExpense(id) {
@@ -93,7 +123,6 @@ export default function App() {
     <div className="app-shell">
       <Toast notif={notif} />
 
-      {/* Add expense sheet */}
       {showAdd && (
         <AddExpenseSheet
           onClose={() => setShowAdd(false)}
@@ -102,11 +131,11 @@ export default function App() {
         />
       )}
 
-      {/* Set income sheet */}
       {showInc && (
         <>
           <div className="sheet-backdrop" onClick={() => setShowInc(false)} />
           <div className="bottom-sheet">
+            <button className="sheet-close-btn" onClick={() => setShowInc(false)} aria-label="Close">✕</button>
             <div className="sheet-handle" />
             <div className="sheet-title">SET INCOME</div>
             <div className="sheet-sub">Your monthly take-home salary</div>
@@ -118,10 +147,10 @@ export default function App() {
             </div>
             <div className="numpad-grid">
               {['1','2','3','4','5','6','7','8','9','.','0','del'].map(k => (
-                <button key={k} className={`num-btn${k==='del'?' del':''}`} onClick={() => {
-                  if (k === 'del') { setIncAmt(p => p.slice(0,-1)); return; }
+                <button key={k} className={`num-btn${k === 'del' ? ' del' : ''}`} onClick={() => {
+                  if (k === 'del') { setIncAmt(p => p.slice(0, -1)); return; }
                   if (k === '.' && incAmt.includes('.')) return;
-                  if (incAmt.replace('.','').length >= 8) return;
+                  if (incAmt.replace('.', '').length >= 8) return;
                   setIncAmt(p => p + k);
                 }}>
                   {k === 'del' ? '⌫' : k}
@@ -135,7 +164,6 @@ export default function App() {
         </>
       )}
 
-      {/* Pages */}
       {tab === 'home' && (
         <Home
           expenses={expenses}
