@@ -1,0 +1,75 @@
+/* ═══════════════════════════════════════════
+   DOPEORCA — Global Styles
+═══════════════════════════════════════════ */
+
+:root {
+  --bg:        #F5F6F8;
+  --surface:   #FFFFFF;
+  --primary:   #FF6B35;
+  --primary2:  #FF8C5A;
+  --secondary: #3B82F6;
+  --text:      #111827;
+  --text2:     #6B7280;
+  --text3:     #9CA3AF;
+  --emerald:   #10B981;
+  --red:       #EF4444;
+  --orange2:   #F59E0B;
+  --border:    #E5E7EB;
+  --shadow:    0 4px 20px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 32px rgba(0,0,0,0.10);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.13);
+  --r:         32px;
+  --r-md:      20px;
+  --r-sm:      12px;
+  --font-h:    'Michroma', sans-serif;
+  --font-b:    'Cardo', serif;
+  --font-ui:   'Outfit', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: var(--primary); color: #fff; }
+input:focus, button:focus, textarea:focus { outline: none; }
+input::placeholder, textarea::placeholder { color: var(--text3); }
+button { cursor: pointer; font-family: var(--font-ui); }
+::-webkit-scrollbar { width: 0; height: 0; }
+
+/* ── Animations ── */
+@keyframes fadeUp   { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+@keyframes slideUp  { from { opacity:0; transform:translateY(100%); } to { opacity:1; transform:translateY(0); } }
+@keyframes scaleIn  { from { opacity:0; transform:scale(0.94); } to { opacity:1; transform:scale(1); } }
+@keyframes spin     { to { transform:rotate(360deg); } }
+@keyframes pulse    { 0%,100%{opacity:1} 50%{opacity:.4} }
+@keyframes shimmer  { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
+@keyframes barFill  { from{width:0} to{width:var(--w)} }
+
+.fade-up  { animation: fadeUp  0.45s cubic-bezier(0.22,1,0.36,1) both; }
+.fade-in  { animation: fadeIn  0.3s ease both; }
+.scale-in { animation: scaleIn 0.35s cubic-bezier(0.22,1,0.36,1) both; }
+
+/* ── Progress stripe ── */
+.progress-stripe {
+  background-image: linear-gradient(
+    45deg,
+    rgba(255,255,255,.18) 25%, transparent 25%,
+    transparent 50%, rgba(255,255,255,.18) 50%,
+    rgba(255,255,255,.18) 75%, transparent 75%, transparent
+  );
+  background-size: 1rem 1rem;
+}
+
+/* ── Card shadow ── */
+.card { background: var(--surface); border-radius: var(--r); box-shadow: var(--shadow); }
+.card-md { background: var(--surface); border-radius: var(--r-md); box-shadow: var(--shadow); }
